@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/baadjis/grpchat/chat"
 	"google.golang.org/grpc"
 )
 
