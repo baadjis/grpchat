@@ -9,18 +9,26 @@ It is generated from these files:
 
 It has these top-level messages:
 	Message
+	ClientLoginRequest
+	ClientLoginResponse
+	ClientLogoutRequest
+	ClientLogoutResponse
+	Login
+	Logout
+	ChatClient
+	ChatGroup
+	ChatGroupList
+	ChatClientList
+	Empty
 */
 package chat
 
+import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
+
 import (
-	fmt "fmt"
-
-	proto "github.com/golang/protobuf/proto"
-
-	math "math"
-
 	context "golang.org/x/net/context"
-
 	grpc "google.golang.org/grpc"
 )
 
@@ -36,7 +44,9 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type Message struct {
-	Body string `protobuf:"bytes,1,opt,name=body" json:"body,omitempty"`
+	Body     string `protobuf:"bytes,1,opt,name=body" json:"body,omitempty"`
+	Sender   string `protobuf:"bytes,2,opt,name=sender" json:"sender,omitempty"`
+	Receiver string `protobuf:"bytes,3,opt,name=receiver" json:"receiver,omitempty"`
 }
 
 func (m *Message) Reset()                    { *m = Message{} }
@@ -51,8 +61,209 @@ func (m *Message) GetBody() string {
 	return ""
 }
 
+func (m *Message) GetSender() string {
+	if m != nil {
+		return m.Sender
+	}
+	return ""
+}
+
+func (m *Message) GetReceiver() string {
+	if m != nil {
+		return m.Receiver
+	}
+	return ""
+}
+
+type ClientLoginRequest struct {
+	Password string `protobuf:"bytes,1,opt,name=password" json:"password,omitempty"`
+	Name     string `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
+}
+
+func (m *ClientLoginRequest) Reset()                    { *m = ClientLoginRequest{} }
+func (m *ClientLoginRequest) String() string            { return proto.CompactTextString(m) }
+func (*ClientLoginRequest) ProtoMessage()               {}
+func (*ClientLoginRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+
+func (m *ClientLoginRequest) GetPassword() string {
+	if m != nil {
+		return m.Password
+	}
+	return ""
+}
+
+func (m *ClientLoginRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type ClientLoginResponse struct {
+	Token string `protobuf:"bytes,1,opt,name=token" json:"token,omitempty"`
+}
+
+func (m *ClientLoginResponse) Reset()                    { *m = ClientLoginResponse{} }
+func (m *ClientLoginResponse) String() string            { return proto.CompactTextString(m) }
+func (*ClientLoginResponse) ProtoMessage()               {}
+func (*ClientLoginResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+
+func (m *ClientLoginResponse) GetToken() string {
+	if m != nil {
+		return m.Token
+	}
+	return ""
+}
+
+type ClientLogoutRequest struct {
+	Token string `protobuf:"bytes,1,opt,name=token" json:"token,omitempty"`
+}
+
+func (m *ClientLogoutRequest) Reset()                    { *m = ClientLogoutRequest{} }
+func (m *ClientLogoutRequest) String() string            { return proto.CompactTextString(m) }
+func (*ClientLogoutRequest) ProtoMessage()               {}
+func (*ClientLogoutRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+func (m *ClientLogoutRequest) GetToken() string {
+	if m != nil {
+		return m.Token
+	}
+	return ""
+}
+
+type ClientLogoutResponse struct {
+}
+
+func (m *ClientLogoutResponse) Reset()                    { *m = ClientLogoutResponse{} }
+func (m *ClientLogoutResponse) String() string            { return proto.CompactTextString(m) }
+func (*ClientLogoutResponse) ProtoMessage()               {}
+func (*ClientLogoutResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+
+type Login struct {
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+}
+
+func (m *Login) Reset()                    { *m = Login{} }
+func (m *Login) String() string            { return proto.CompactTextString(m) }
+func (*Login) ProtoMessage()               {}
+func (*Login) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+
+func (m *Login) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type Logout struct {
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+}
+
+func (m *Logout) Reset()                    { *m = Logout{} }
+func (m *Logout) String() string            { return proto.CompactTextString(m) }
+func (*Logout) ProtoMessage()               {}
+func (*Logout) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
+
+func (m *Logout) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type ChatClient struct {
+	Sender string `protobuf:"bytes,1,opt,name=sender" json:"sender,omitempty"`
+}
+
+func (m *ChatClient) Reset()                    { *m = ChatClient{} }
+func (m *ChatClient) String() string            { return proto.CompactTextString(m) }
+func (*ChatClient) ProtoMessage()               {}
+func (*ChatClient) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
+
+func (m *ChatClient) GetSender() string {
+	if m != nil {
+		return m.Sender
+	}
+	return ""
+}
+
+type ChatGroup struct {
+	Client string `protobuf:"bytes,1,opt,name=client" json:"client,omitempty"`
+	Name   string `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
+}
+
+func (m *ChatGroup) Reset()                    { *m = ChatGroup{} }
+func (m *ChatGroup) String() string            { return proto.CompactTextString(m) }
+func (*ChatGroup) ProtoMessage()               {}
+func (*ChatGroup) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+
+func (m *ChatGroup) GetClient() string {
+	if m != nil {
+		return m.Client
+	}
+	return ""
+}
+
+func (m *ChatGroup) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type ChatGroupList struct {
+	Groups []string `protobuf:"bytes,1,rep,name=groups" json:"groups,omitempty"`
+}
+
+func (m *ChatGroupList) Reset()                    { *m = ChatGroupList{} }
+func (m *ChatGroupList) String() string            { return proto.CompactTextString(m) }
+func (*ChatGroupList) ProtoMessage()               {}
+func (*ChatGroupList) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+
+func (m *ChatGroupList) GetGroups() []string {
+	if m != nil {
+		return m.Groups
+	}
+	return nil
+}
+
+type ChatClientList struct {
+	Clients []string `protobuf:"bytes,1,rep,name=clients" json:"clients,omitempty"`
+}
+
+func (m *ChatClientList) Reset()                    { *m = ChatClientList{} }
+func (m *ChatClientList) String() string            { return proto.CompactTextString(m) }
+func (*ChatClientList) ProtoMessage()               {}
+func (*ChatClientList) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
+
+func (m *ChatClientList) GetClients() []string {
+	if m != nil {
+		return m.Clients
+	}
+	return nil
+}
+
+type Empty struct {
+}
+
+func (m *Empty) Reset()                    { *m = Empty{} }
+func (m *Empty) String() string            { return proto.CompactTextString(m) }
+func (*Empty) ProtoMessage()               {}
+func (*Empty) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
+
 func init() {
 	proto.RegisterType((*Message)(nil), "chat.Message")
+	proto.RegisterType((*ClientLoginRequest)(nil), "chat.ClientLoginRequest")
+	proto.RegisterType((*ClientLoginResponse)(nil), "chat.ClientLoginResponse")
+	proto.RegisterType((*ClientLogoutRequest)(nil), "chat.ClientLogoutRequest")
+	proto.RegisterType((*ClientLogoutResponse)(nil), "chat.ClientLogoutResponse")
+	proto.RegisterType((*Login)(nil), "chat.Login")
+	proto.RegisterType((*Logout)(nil), "chat.Logout")
+	proto.RegisterType((*ChatClient)(nil), "chat.ChatClient")
+	proto.RegisterType((*ChatGroup)(nil), "chat.ChatGroup")
+	proto.RegisterType((*ChatGroupList)(nil), "chat.ChatGroupList")
+	proto.RegisterType((*ChatClientList)(nil), "chat.ChatClientList")
+	proto.RegisterType((*Empty)(nil), "chat.Empty")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -66,8 +277,17 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for ChatService service
 
 type ChatServiceClient interface {
-	SayHello(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error)
-	BroadcastMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error)
+	Login(ctx context.Context, in *ClientLoginRequest, opts ...grpc.CallOption) (*ClientLoginResponse, error)
+	Logout(ctx context.Context, in *ClientLogoutRequest, opts ...grpc.CallOption) (*ClientLogoutResponse, error)
+	RouteChat(ctx context.Context, opts ...grpc.CallOption) (ChatService_RouteChatClient, error)
+	UnRegister(ctx context.Context, in *ChatClient, opts ...grpc.CallOption) (*Empty, error)
+	Register(ctx context.Context, in *ChatClient, opts ...grpc.CallOption) (*Empty, error)
+	CreateChatGroup(ctx context.Context, in *ChatGroup, opts ...grpc.CallOption) (*Empty, error)
+	JoinChatGroup(ctx context.Context, in *ChatGroup, opts ...grpc.CallOption) (*Empty, error)
+	GetChatGroupList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ChatGroupList, error)
+	GetChatGroupClientList(ctx context.Context, in *ChatGroup, opts ...grpc.CallOption) (*ChatClientList, error)
+	GetChatClientList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ChatClientList, error)
+	LeaveChatRoom(ctx context.Context, in *ChatGroup, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type chatServiceClient struct {
@@ -78,18 +298,121 @@ func NewChatServiceClient(cc *grpc.ClientConn) ChatServiceClient {
 	return &chatServiceClient{cc}
 }
 
-func (c *chatServiceClient) SayHello(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error) {
-	out := new(Message)
-	err := grpc.Invoke(ctx, "/chat.ChatService/SayHello", in, out, c.cc, opts...)
+func (c *chatServiceClient) Login(ctx context.Context, in *ClientLoginRequest, opts ...grpc.CallOption) (*ClientLoginResponse, error) {
+	out := new(ClientLoginResponse)
+	err := grpc.Invoke(ctx, "/chat.ChatService/Login", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *chatServiceClient) BroadcastMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error) {
-	out := new(Message)
-	err := grpc.Invoke(ctx, "/chat.ChatService/BroadcastMessage", in, out, c.cc, opts...)
+func (c *chatServiceClient) Logout(ctx context.Context, in *ClientLogoutRequest, opts ...grpc.CallOption) (*ClientLogoutResponse, error) {
+	out := new(ClientLogoutResponse)
+	err := grpc.Invoke(ctx, "/chat.ChatService/Logout", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) RouteChat(ctx context.Context, opts ...grpc.CallOption) (ChatService_RouteChatClient, error) {
+	stream, err := grpc.NewClientStream(ctx, &_ChatService_serviceDesc.Streams[0], c.cc, "/chat.ChatService/RouteChat", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &chatServiceRouteChatClient{stream}
+	return x, nil
+}
+
+type ChatService_RouteChatClient interface {
+	Send(*Message) error
+	Recv() (*Message, error)
+	grpc.ClientStream
+}
+
+type chatServiceRouteChatClient struct {
+	grpc.ClientStream
+}
+
+func (x *chatServiceRouteChatClient) Send(m *Message) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *chatServiceRouteChatClient) Recv() (*Message, error) {
+	m := new(Message)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *chatServiceClient) UnRegister(ctx context.Context, in *ChatClient, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/chat.ChatService/UnRegister", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) Register(ctx context.Context, in *ChatClient, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/chat.ChatService/Register", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) CreateChatGroup(ctx context.Context, in *ChatGroup, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/chat.ChatService/CreateChatGroup", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) JoinChatGroup(ctx context.Context, in *ChatGroup, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/chat.ChatService/JoinChatGroup", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) GetChatGroupList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ChatGroupList, error) {
+	out := new(ChatGroupList)
+	err := grpc.Invoke(ctx, "/chat.ChatService/GetChatGroupList", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) GetChatGroupClientList(ctx context.Context, in *ChatGroup, opts ...grpc.CallOption) (*ChatClientList, error) {
+	out := new(ChatClientList)
+	err := grpc.Invoke(ctx, "/chat.ChatService/GetChatGroupClientList", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) GetChatClientList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ChatClientList, error) {
+	out := new(ChatClientList)
+	err := grpc.Invoke(ctx, "/chat.ChatService/GetChatClientList", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) LeaveChatRoom(ctx context.Context, in *ChatGroup, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/chat.ChatService/LeaveChatRoom", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,46 +422,225 @@ func (c *chatServiceClient) BroadcastMessage(ctx context.Context, in *Message, o
 // Server API for ChatService service
 
 type ChatServiceServer interface {
-	SayHello(context.Context, *Message) (*Message, error)
-	BroadcastMessage(context.Context, *Message) (*Message, error)
+	Login(context.Context, *ClientLoginRequest) (*ClientLoginResponse, error)
+	Logout(context.Context, *ClientLogoutRequest) (*ClientLogoutResponse, error)
+	RouteChat(ChatService_RouteChatServer) error
+	UnRegister(context.Context, *ChatClient) (*Empty, error)
+	Register(context.Context, *ChatClient) (*Empty, error)
+	CreateChatGroup(context.Context, *ChatGroup) (*Empty, error)
+	JoinChatGroup(context.Context, *ChatGroup) (*Empty, error)
+	GetChatGroupList(context.Context, *Empty) (*ChatGroupList, error)
+	GetChatGroupClientList(context.Context, *ChatGroup) (*ChatClientList, error)
+	GetChatClientList(context.Context, *Empty) (*ChatClientList, error)
+	LeaveChatRoom(context.Context, *ChatGroup) (*Empty, error)
 }
 
 func RegisterChatServiceServer(s *grpc.Server, srv ChatServiceServer) {
 	s.RegisterService(&_ChatService_serviceDesc, srv)
 }
 
-func _ChatService_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Message)
+func _ChatService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ClientLoginRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatServiceServer).SayHello(ctx, in)
+		return srv.(ChatServiceServer).Login(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chat.ChatService/SayHello",
+		FullMethod: "/chat.ChatService/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).SayHello(ctx, req.(*Message))
+		return srv.(ChatServiceServer).Login(ctx, req.(*ClientLoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ChatService_BroadcastMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Message)
+func _ChatService_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ClientLogoutRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatServiceServer).BroadcastMessage(ctx, in)
+		return srv.(ChatServiceServer).Logout(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chat.ChatService/BroadcastMessage",
+		FullMethod: "/chat.ChatService/Logout",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).BroadcastMessage(ctx, req.(*Message))
+		return srv.(ChatServiceServer).Logout(ctx, req.(*ClientLogoutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_RouteChat_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ChatServiceServer).RouteChat(&chatServiceRouteChatServer{stream})
+}
+
+type ChatService_RouteChatServer interface {
+	Send(*Message) error
+	Recv() (*Message, error)
+	grpc.ServerStream
+}
+
+type chatServiceRouteChatServer struct {
+	grpc.ServerStream
+}
+
+func (x *chatServiceRouteChatServer) Send(m *Message) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *chatServiceRouteChatServer) Recv() (*Message, error) {
+	m := new(Message)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _ChatService_UnRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatClient)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).UnRegister(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/UnRegister",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).UnRegister(ctx, req.(*ChatClient))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatClient)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/Register",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).Register(ctx, req.(*ChatClient))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_CreateChatGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatGroup)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).CreateChatGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/CreateChatGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).CreateChatGroup(ctx, req.(*ChatGroup))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_JoinChatGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatGroup)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).JoinChatGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/JoinChatGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).JoinChatGroup(ctx, req.(*ChatGroup))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_GetChatGroupList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).GetChatGroupList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/GetChatGroupList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).GetChatGroupList(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_GetChatGroupClientList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatGroup)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).GetChatGroupClientList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/GetChatGroupClientList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).GetChatGroupClientList(ctx, req.(*ChatGroup))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_GetChatClientList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).GetChatClientList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/GetChatClientList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).GetChatClientList(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_LeaveChatRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatGroup)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).LeaveChatRoom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/LeaveChatRoom",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).LeaveChatRoom(ctx, req.(*ChatGroup))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -148,29 +650,88 @@ var _ChatService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*ChatServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SayHello",
-			Handler:    _ChatService_SayHello_Handler,
+			MethodName: "Login",
+			Handler:    _ChatService_Login_Handler,
 		},
 		{
-			MethodName: "BroadcastMessage",
-			Handler:    _ChatService_BroadcastMessage_Handler,
+			MethodName: "Logout",
+			Handler:    _ChatService_Logout_Handler,
+		},
+		{
+			MethodName: "UnRegister",
+			Handler:    _ChatService_UnRegister_Handler,
+		},
+		{
+			MethodName: "Register",
+			Handler:    _ChatService_Register_Handler,
+		},
+		{
+			MethodName: "CreateChatGroup",
+			Handler:    _ChatService_CreateChatGroup_Handler,
+		},
+		{
+			MethodName: "JoinChatGroup",
+			Handler:    _ChatService_JoinChatGroup_Handler,
+		},
+		{
+			MethodName: "GetChatGroupList",
+			Handler:    _ChatService_GetChatGroupList_Handler,
+		},
+		{
+			MethodName: "GetChatGroupClientList",
+			Handler:    _ChatService_GetChatGroupClientList_Handler,
+		},
+		{
+			MethodName: "GetChatClientList",
+			Handler:    _ChatService_GetChatClientList_Handler,
+		},
+		{
+			MethodName: "LeaveChatRoom",
+			Handler:    _ChatService_LeaveChatRoom_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "RouteChat",
+			Handler:       _ChatService_RouteChat_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "grpchat.proto",
 }
 
 func init() { proto.RegisterFile("grpchat.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 132 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4d, 0x2f, 0x2a, 0x48,
-	0xce, 0x48, 0x2c, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x01, 0xb1, 0x95, 0x64, 0xb9,
-	0xd8, 0x7d, 0x53, 0x8b, 0x8b, 0x13, 0xd3, 0x53, 0x85, 0x84, 0xb8, 0x58, 0x92, 0xf2, 0x53, 0x2a,
-	0x25, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0xc0, 0x6c, 0xa3, 0x5c, 0x2e, 0x6e, 0xe7, 0x8c, 0xc4,
-	0x92, 0xe0, 0xd4, 0xa2, 0xb2, 0xcc, 0xe4, 0x54, 0x21, 0x2d, 0x2e, 0x8e, 0xe0, 0xc4, 0x4a, 0x8f,
-	0xd4, 0x9c, 0x9c, 0x7c, 0x21, 0x5e, 0x3d, 0xb0, 0x61, 0x50, 0xdd, 0x52, 0xa8, 0x5c, 0x25, 0x06,
-	0x21, 0x23, 0x2e, 0x01, 0xa7, 0xa2, 0xfc, 0xc4, 0x94, 0xe4, 0xc4, 0xe2, 0x12, 0x98, 0x15, 0x04,
-	0xf4, 0x24, 0xb1, 0x81, 0x9d, 0x66, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0x20, 0xcd, 0x0f, 0x66,
-	0xab, 0x00, 0x00, 0x00,
+	// 462 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0x5d, 0x8b, 0xd3, 0x40,
+	0x14, 0x6d, 0xdc, 0x7e, 0x6c, 0xef, 0x12, 0x77, 0x9d, 0x2d, 0x25, 0x46, 0x1f, 0x96, 0x41, 0x70,
+	0x71, 0x71, 0xeb, 0x07, 0xa8, 0x4f, 0x82, 0x54, 0x59, 0x90, 0xfa, 0x60, 0xc4, 0x1f, 0x90, 0xa6,
+	0x97, 0x34, 0x68, 0x67, 0xe2, 0xcc, 0xa4, 0xd2, 0x5f, 0xec, 0xdf, 0x90, 0xf9, 0x48, 0x9a, 0xa4,
+	0x11, 0xfb, 0x36, 0x67, 0xee, 0x39, 0xe7, 0xde, 0x39, 0x37, 0x04, 0xfc, 0x54, 0xe4, 0xc9, 0x3a,
+	0x56, 0xb7, 0xb9, 0xe0, 0x8a, 0x93, 0xbe, 0x3e, 0xd3, 0xaf, 0x30, 0xfa, 0x82, 0x52, 0xc6, 0x29,
+	0x12, 0x02, 0xfd, 0x25, 0x5f, 0xed, 0x02, 0xef, 0xca, 0xbb, 0x1e, 0x47, 0xe6, 0x4c, 0xa6, 0x30,
+	0x94, 0xc8, 0x56, 0x28, 0x82, 0x7b, 0xe6, 0xd6, 0x21, 0x12, 0xc2, 0xa9, 0xc0, 0x04, 0xb3, 0x2d,
+	0x8a, 0xe0, 0xc4, 0x54, 0x2a, 0x4c, 0x3f, 0x02, 0x99, 0xff, 0xcc, 0x90, 0xa9, 0x05, 0x4f, 0x33,
+	0x16, 0xe1, 0xaf, 0x02, 0xa5, 0xd2, 0x8a, 0x3c, 0x96, 0xf2, 0x37, 0x17, 0x2b, 0xd7, 0xa1, 0xc2,
+	0xba, 0x33, 0x8b, 0x37, 0xe8, 0x7a, 0x98, 0x33, 0xbd, 0x81, 0xcb, 0x86, 0x8b, 0xcc, 0x39, 0x93,
+	0x48, 0x26, 0x30, 0x50, 0xfc, 0x07, 0x32, 0xe7, 0x61, 0x41, 0x83, 0xcc, 0x0b, 0x55, 0xf6, 0xec,
+	0x26, 0x4f, 0x61, 0xd2, 0x24, 0x5b, 0x6b, 0xfa, 0x08, 0x06, 0xa6, 0x57, 0x35, 0x8e, 0x57, 0x1b,
+	0xe7, 0x31, 0x0c, 0x2d, 0xbd, 0xb3, 0xfa, 0x04, 0x60, 0xbe, 0x8e, 0x95, 0xb5, 0xad, 0x85, 0xe6,
+	0xd5, 0x43, 0xa3, 0x6f, 0x61, 0xac, 0x59, 0x77, 0x82, 0x17, 0xb9, 0x26, 0x25, 0x86, 0x5e, 0x92,
+	0x2c, 0xea, 0xcc, 0xe2, 0x29, 0xf8, 0x95, 0x70, 0x91, 0x49, 0xd3, 0x21, 0xd5, 0x40, 0x06, 0xde,
+	0xd5, 0x89, 0x16, 0x5b, 0x44, 0x9f, 0xc1, 0xfd, 0xfd, 0x1c, 0x86, 0x19, 0xc0, 0xc8, 0x1a, 0x97,
+	0xd4, 0x12, 0xd2, 0x11, 0x0c, 0x3e, 0x6d, 0x72, 0xb5, 0x7b, 0xf5, 0xa7, 0x0f, 0x67, 0x5a, 0xf5,
+	0x0d, 0xc5, 0x36, 0x4b, 0x90, 0xbc, 0x2f, 0x73, 0x08, 0x6e, 0xcd, 0xe7, 0x72, 0xb8, 0xcc, 0xf0,
+	0x61, 0x47, 0xc5, 0xa5, 0xd8, 0x23, 0x1f, 0xaa, 0xa8, 0xda, 0xb4, 0xfd, 0x6a, 0xc2, 0xb0, 0xab,
+	0x54, 0x59, 0xcc, 0x60, 0x1c, 0xf1, 0x42, 0xa1, 0x1e, 0x8b, 0xf8, 0x96, 0xea, 0x3e, 0xd3, 0xb0,
+	0x09, 0x69, 0xef, 0xda, 0x7b, 0xe1, 0x91, 0xe7, 0x00, 0xdf, 0x59, 0x84, 0x69, 0x26, 0x15, 0x0a,
+	0x72, 0xe1, 0xcc, 0xab, 0x28, 0xc2, 0x33, 0x7b, 0x63, 0x1e, 0x4c, 0x7b, 0xe4, 0x06, 0x4e, 0x8f,
+	0x27, 0xbf, 0x84, 0xf3, 0xb9, 0xc0, 0xd8, 0x4e, 0x63, 0x97, 0x77, 0xbe, 0xd7, 0x98, 0x8b, 0xb6,
+	0x64, 0x06, 0xfe, 0x67, 0x9e, 0xb1, 0xe3, 0x05, 0x6f, 0xe0, 0xe2, 0x0e, 0x55, 0x73, 0xc9, 0x75,
+	0x4a, 0x78, 0xd9, 0x32, 0xd0, 0x0c, 0x93, 0xf5, 0xb4, 0xae, 0xab, 0x2d, 0xfe, 0xa0, 0xe3, 0xa4,
+	0xfd, 0x4e, 0x67, 0xf1, 0x0e, 0x1e, 0x38, 0x8b, 0x9a, 0xba, 0xd1, 0xfb, 0x5f, 0xca, 0x19, 0xf8,
+	0x0b, 0x8c, 0xb7, 0x26, 0x97, 0x88, 0xf3, 0xcd, 0xff, 0x5e, 0xb9, 0x1c, 0x9a, 0x3f, 0xcf, 0xeb,
+	0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x8e, 0x03, 0x32, 0x75, 0x8a, 0x04, 0x00, 0x00,
 }
