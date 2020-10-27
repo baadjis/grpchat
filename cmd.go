@@ -73,7 +73,8 @@ func TopMenuText() {
 	AddSpacing(1)
 	fmt.Println("1) Create a Group")
 	fmt.Println("2) View Group Options")
-	fmt.Println("3) Exit Chat")
+	fmt.Println("3) view inbox options")
+	fmt.Println("4) exit chat ")
 	AddSpacing(1)
 	color.New(promptColor).Print("Main> ")
 }
@@ -92,6 +93,19 @@ func GroupMenuText() {
 	fmt.Println("4) Go back")
 	AddSpacing(1)
 	color.New(promptColor).Print("Groups> ")
+}
+// inbox menu text
+func InboxMenuText() {
+
+	fmt.Println("Inbox Menu")
+	AddSpacing(1)
+	fmt.Println("1) view inbox invitation")
+	fmt.Println("2) send invitation to someone")
+	fmt.Println("3) accept or reject invitation from someone")
+	fmt.Println("4) exit inbox")
+
+	AddSpacing(1)
+	color.New(promptColor).Print("Inbox> ")
 }
 
 // ViewGroupMemMenuText displays option text to view a group.
@@ -185,8 +199,8 @@ func CreateChatGroup(c chat.ChatServiceClient, r *bufio.Reader, uName string) (s
 	}
 }
 
-// JoinGroup handles the join group menu option.
-// It returns a string which contains the keyword !back allowing it to escape the input.
+// handles the join group menu option.
+
 func JoinChatGroup(c chat.ChatServiceClient, r *bufio.Reader, u string) string {
 
 	for {
@@ -211,13 +225,28 @@ func JoinChatGroup(c chat.ChatServiceClient, r *bufio.Reader, u string) string {
 		}
 	}
 }
+// get chat groups or  invitattions for inbox chat list
+func GetChatGroupsOrInvitation(c chat.ChatServiceClient)([]string,[]string){
+	t, _ := c.GetChatGroupList(context.Background(), &chat.Empty{})	
+	l :=t.Groups
+	groups :=make([]string, 0)
+	invitations :=make([]string, 0)
+	for _,g :=range l{
+		if strings.Contains(g,"+"){
+			invitations = append(invitations,strings.Split(g,"+")[0])
+		}else{
+			groups = append(groups,g)
+		}
 
+	}
+   return groups,invitations
+}
 // ListGroups handles listing all of the groups stored on the server.
 // It doesn't return anything.
 func ListChatGroups(c chat.ChatServiceClient, r *bufio.Reader) {
 
-	t, _ := c.GetChatGroupList(context.Background(), &chat.Empty{})
-	l := t.Groups
+	l, _ := GetChatGroupsOrInvitation(c)
+	
 
 	if len(l) == 0 {
 		AddSpacing(1)
@@ -270,6 +299,131 @@ func ListChatGroupMembers(c chat.ChatServiceClient, r *bufio.Reader, u string) e
 	}
 }
 
+func IsRegistered(c chat.ChatServiceClient, uName string) bool {
+	clientList, _ := c.GetChatClientList(context.Background(), &chat.Empty{})
+	for _, cl := range clientList.Clients {
+		if cl == uName {
+			return true
+		}
+	}
+	return false
+}
+func JoinedGroup(c chat.ChatServiceClient, uName string, gName string) bool {
+	members, _ := c.GetChatGroupClientList(context.Background(), &chat.ChatGroup{Name: gName})
+	for _, cl := range members.Clients {
+		if cl == uName {
+			return true
+		}
+	}
+
+	return false
+}
+
+// invite someone for inboxchat
+
+func InboxInvitation(c chat.ChatServiceClient, r *bufio.Reader, uName string) (string, error) {
+
+	for {
+		AddSpacing(1)
+		fmt.Println("Enter the name of person you want to invite for inbox chat.")
+		color.New(promptColor).Print("Invite> ")
+		other, err := r.ReadString('\n')
+		other = strings.TrimSpace(other)
+		g := uName + "+" + other
+		if err != nil {
+			return "", err
+		} else if other != "!back" && IsRegistered(c, other) {
+
+			_, nerr := c.CreateChatGroup(context.Background(), &chat.ChatGroup{Client: uName, Name: g})
+
+			if nerr != nil {
+				AddSpacing(1)
+				color.New(color.FgRed).Println("invitation already sent")
+			} else {
+				c.JoinChatGroup(context.Background(), &chat.ChatGroup{Client: uName, Name: g})
+				AddSpacing(1)
+				color.New(color.FgGreen).Println("sent inbox invitation to: " + other)
+				return g, nil
+			}
+		} else {
+			return g, nil
+		}
+	}
+}
+
+
+
+// list chat invitation for current user
+func ListInvitations(c chat.ChatServiceClient, uName string) {
+	fmt.Println("invitations:")
+
+	_,list := GetChatGroupsOrInvitation(c)
+	if len(list) > 0 {
+		for i, inv := range list {
+
+			Frame()
+			println(strconv.Itoa(i+1) + " )invitation from :" + inv)
+
+		}
+	} else {
+		println("you have no invitation")
+	}
+}
+func CheckInvitation(c chat.ChatServiceClient, u string, other string) bool {
+	_,list := GetChatGroupsOrInvitation(c)
+
+	for _, inv := range list {
+		if inv == other {
+
+			return true
+		}
+	}
+
+	fmt.Println("you have no invitation from:" + other + "!!")
+
+	return false
+}
+
+// accept invitation from someone
+func AcceptOrRejectInvitation(c chat.ChatServiceClient, r *bufio.Reader, u string) string{
+	_,list := GetChatGroupsOrInvitation(c)
+
+	if len(list) > 0 {
+		
+			fmt.Println("type the name of someone to accept or reject invitation")
+			other, _ := r.ReadString('\n')
+			other = strings.TrimSpace(other)
+			g := other +"+"+ u
+			if CheckInvitation(c, u, other) {
+				println(">Accept " + other + " y(yes) or n(no): ")
+				i, _ := r.ReadString('\n')
+				i = strings.TrimSpace(i)
+				switch answer := i; answer {
+				case "y": //accept
+					_,err := c.JoinChatGroup(context.Background(), &chat.ChatGroup{Client: u, Name: g})
+					if err ==nil {
+						color.New(color.FgGreen).Println("Joined " + other)
+						
+						return g
+					}
+					
+
+				case "n":
+					c.LeaveChatRoom(context.Background(), &chat.ChatGroup{Client: u, Name: g})
+					return "!back"
+				default:
+					fmt.Println("please answer y(yes) or n(no)")
+				}
+
+			}
+		
+	} else {
+		fmt.Println("you have no invitation")
+	}
+ return "!back"
+}
+
+//
 // TopMenu handles displaying the menu to the client.
 // It returns the group name for the user and an error.
 func TopMenu(c chat.ChatServiceClient, r *bufio.Reader, u string) (string, error) {
@@ -301,17 +455,22 @@ func TopMenu(c chat.ChatServiceClient, r *bufio.Reader, u string) (string, error
 			} else if g != "!back" {
 				return g, nil
 			}
-		case "3": // Exit Client
-			c.UnRegister(context.Background(), &chat.ChatClient{Sender: u})
-			os.Exit(0)
+		case "3": // inbox menu
+		 return DisplayInboxMenu(c,r,u)
+		    
+
+		case "4": // exit client
+		    c.UnRegister(context.Background(), &chat.ChatClient{Sender: u})
+		    os.Exit(0)
+		
 		default: // Error
 			color.New(color.FgRed).Println("Please enter a valid selection between 1 and 3.")
 		}
 	}
 }
 
-// DisplayGroupMenu displays the menu for the group options.
-// It returns either an empty string or the keyword !back to navigate to TopMenu.
+// displays the menu for the group options.
+
 func DisplayGroupMenu(c chat.ChatServiceClient, r *bufio.Reader, u string) (string, error) {
 
 	ListChatGroups(c, r)
@@ -341,6 +500,29 @@ func DisplayGroupMenu(c chat.ChatServiceClient, r *bufio.Reader, u string) (stri
 			return "!back", nil
 		default: // Error
 			color.New(color.FgRed).Println("Please enter a valid selection between 1 and 4.")
+		}
+	}
+}
+func DisplayInboxMenu(c chat.ChatServiceClient, r *bufio.Reader, u string) (string, error){
+	log.Println("In TopMenu")
+	for {
+		Frame()
+		InboxMenuText()
+		i, _ := r.ReadString('\n')
+		i = strings.TrimSpace(i)
+
+		switch input := i; input {
+
+		case "1": // list invitations
+			ListInvitations(c, u)
+		case "2": // send  invitation to someone
+			g,_:=InboxInvitation(c, r, u)
+			return g,nil
+		case "3":
+			g:=AcceptOrRejectInvitation(c, r, u)
+			return g,nil
+		default: // Error
+			color.New(color.FgRed).Println("Please enter a valid selection between 1 and 3.")
 		}
 	}
 }

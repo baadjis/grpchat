@@ -441,7 +441,7 @@ func (s *server) Login(ctx context.Context, req *chat.ClientLoginRequest) (*chat
 	tkn := s.genToken()
 	s.setName(tkn, req.Name)
 
-	log.Printf(tkn + "," + req.Name + "has logged in")
+	log.Println(tkn + "," + req.Name + "has logged in")
 
 	return &chat.ClientLoginResponse{Token: tkn}, nil
 }

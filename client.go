@@ -147,7 +147,7 @@ func CurrentMembers(c chat.ChatServiceClient, g string) {
 
 //initialise message listener and start chatting
 
-func StartChat(stream chat.ChatService_RouteChatClient, c chat.ChatServiceClient, listener *Listener, r *bufio.Reader, u string, g string) *Listener {
+func StartChat(stream chat.ChatService_RouteChatClient, c chat.ChatServiceClient, listener *Listener, r *bufio.Reader, u string, g string) (*Listener, *Listener) {
 
 	//t, cancel := context.WithCancel(ctx)
 	//stream, serr := c.RouteChat(t)
@@ -158,38 +158,53 @@ func StartChat(stream chat.ChatService_RouteChatClient, c chat.ChatServiceClient
 	//if serr != nil {
 	//	fmt.Print(serr)
 	//} else {
-	listenerQueue := NewListener() // Creates the sQueue with a channel and waitgroup.
+	sendingQueue := NewListener() // Creates the sQueue with a channel and waitgroup.
+	receivingQueue := NewListener()
 
-	go ListenToClient(listenerQueue, r, u, g)
-	go ReceiveMessages(listenerQueue, stream, u)
+	go ListenToClient(sendingQueue, r, u, g)
+	go ReceiveMessages(receivingQueue, stream, u)
 
 	// TODO: Find out why the first message is always dropped so an empty message needn't be sent.
 	stream.Send(&chat.Message{Sender: u, Receiver: g, Body: ""})
 	stream.Send(&chat.Message{Sender: u, Receiver: g, Body: "joined chat!\n"})
 	listener.chattingState = true
 	listener.stream = stream
-	return listenerQueue
+	return sendingQueue, receivingQueue
 
+}
+
+// print help instruction
+func help() {
+	log.Println("!help.")
+	AddSpacing(1)
+	fmt.Println("The following commands are available to you: ")
+	color.New(color.FgHiYellow).Print("   !members")
+	fmt.Print(": Lists the current members in the group.")
+
+	AddSpacing(1)
+	color.New(color.FgHiYellow).Print("   !exit")
+	fmt.Println(": Leaves the chat server.")
+	AddSpacing(1)
 }
 
 func Chat(conn *grpc.ClientConn, stream chat.ChatService_RouteChatClient, c chat.ChatServiceClient, listener *Listener, r *bufio.Reader, u string, g string) bool {
 
-	listenerQueue := StartChat(stream, c, listener, r, u, g)
+	sendingQueue, receivingQueue := StartChat(stream, c, listener, r, u, g)
 	AddSpacing(1)
 	fmt.Println("good chat with " + g + ".")
 	Frame()
 
 	for {
 		select {
-		case toSend := <-listenerQueue.MessageChanel:
+		case toSend := <-sendingQueue.MessageChanel:
 			switch msg := strings.TrimSpace(toSend.Body); msg {
 			case "!members":
-				log.Println("!members.")
+				log.Println("!members:")
 				CurrentMembers(c, g)
 			case "!leave":
 				log.Println("!leave.")
 				c.LeaveChatRoom(context.Background(), &chat.ChatGroup{Client: u, Name: g})
-				listenerQueue.StopListeningMessage()
+				sendingQueue.StopListeningMessage()
 
 				//stream.CloseSend()
 				log.Println("HEY LOOK")
@@ -205,25 +220,19 @@ func Chat(conn *grpc.ClientConn, stream chat.ChatService_RouteChatClient, c chat
 				conn.Close()
 				return false
 			case "!help":
-				log.Println("[Main]: I'm in !help.")
-				AddSpacing(1)
-				fmt.Println("The following commands are available to you: ")
-				color.New(color.FgHiYellow).Print("   !members")
-				fmt.Print(": Lists the current members in the group.")
-
-				AddSpacing(1)
-				color.New(color.FgHiYellow).Print("   !exit")
-				fmt.Println(": Leaves the chat server.")
-				AddSpacing(1)
+				help()
 
 			default:
-				log.Println("[Main]: Sending the message.")
+				log.Println("Sending the message.")
 				stream.Send(&toSend)
 			}
-		case received := <-listenerQueue.MessageChanel:
-			log.Println("[Receiving the message.")
+		case received := <-receivingQueue.MessageChanel:
+			log.Println("Receiving the message.")
 			if received.Body != "!leave" {
-				fmt.Printf("%s> %s", received.Sender, received.Body)
+				
+				fmt.Printf("%s:%s> %s", g, received.Sender, received.Body)
+				
+
 			}
 		}
 	}

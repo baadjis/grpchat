@@ -1,11 +1,80 @@
 syntax = "proto3";
 package chat;
 
-message Message {
-  string body = 1;
-}
 
 service ChatService {
-  rpc SayHello(Message) returns (Message) {}
-  rpc BroadcastMessage(Message) returns (Message) {}
+
+  rpc Login(ClientLoginRequest) returns (ClientLoginResponse) {}
+
+  rpc Logout(ClientLogoutRequest) returns (ClientLogoutResponse) {}
+
+  rpc RouteChat(stream Message) returns (stream Message) {}
+
+  rpc UnRegister(ChatClient) returns (Empty) {}
+
+  rpc Register(ChatClient) returns (Empty) {}
+
+  rpc CreateChatGroup(ChatGroup) returns (Empty) {}
+
+  rpc JoinChatGroup(ChatGroup) returns (Empty) {}
+
+  rpc GetChatGroupList(Empty) returns (ChatGroupList) {}
+
+  rpc GetChatGroupClientList(ChatGroup) returns (ChatClientList) {}
+
+  rpc GetChatClientList(Empty) returns (ChatClientList) {}
+
+  rpc LeaveChatRoom(ChatGroup) returns (Empty) {}
 }
+
+
+message Message {
+  string body = 1;
+  string sender = 2;
+  string receiver = 3;
+  
+}
+message ClientLoginRequest{
+  string password = 1;
+  string name     = 2;
+}
+
+message ClientLoginResponse{
+  string token = 1;
+}
+
+message ClientLogoutRequest {
+  string token = 1;
+}
+
+message ClientLogoutResponse {}
+
+message Login {
+  string name = 1;
+}
+
+message Logout {
+  string name = 1;
+}
+
+
+message ChatClient {
+  string sender = 1;
+}
+
+message ChatGroup {
+  string client = 1;
+  string name = 2;
+}
+
+message ChatGroupList {
+  repeated string groups = 1;
+}
+
+message ChatClientList {
+  repeated string clients = 1;
+
+}
+message Empty {
+}
+
