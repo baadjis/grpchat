@@ -20,7 +20,7 @@ import (
 
 // The port the server is listening on.
 const (
-	port        = ":12021"
+	port        = ":16180"
 	tokenHeader = "x-chat-token"
 )
 
@@ -506,7 +506,7 @@ func main() {
 
 	// Register the server with gRPC.
 	chat.RegisterChatServiceServer(s, &server{lock: *mlock, chatclients: clients,
-		chatgroups: groups, Host: port, Password: "nada"})
+		chatgroups: groups, Host: port, Password: "goldenratio"})
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
