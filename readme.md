@@ -1,5 +1,5 @@
 #grpchat
-A client/ server (group or one to one) chat grpc app using golang
+A client/ server (group or one to one) chat grpc app written in go
 
 ## how to 
 
